@@ -7,7 +7,7 @@ app = Flask(__name)
 
 # Replace with your API keys
 openai.api_key = "YOUR_OPENAI_API_KEY"
-openweathermap_api_key = "70579bda7687d3664fd9ba88253e9cfd"
+openweathermap_api_key = "OPENWEATHERMAP_API_KEY"
 
 # Twilio API credentials
 twilio_account_sid = "YOUR_TWILIO_ACCOUNT_SID"
