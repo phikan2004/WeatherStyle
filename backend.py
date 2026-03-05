@@ -1,18 +1,19 @@
 from flask import Flask, request, jsonify
 import requests
 import openai
+import os
 from twilio.rest import Client
 
-app = Flask(__name)
+app = Flask(__name__)
 
-# Replace with your API keys
-openai.api_key = "YOUR_OPENAI_API_KEY"
-openweathermap_api_key = "OPENWEATHERMAP_API_KEY"
+# Load API keys from environment variables
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+openweathermap_api_key = os.environ.get("OPENWEATHERMAP_API_KEY")
 
 # Twilio API credentials
-twilio_account_sid = "YOUR_TWILIO_ACCOUNT_SID"
-twilio_auth_token = "YOUR_TWILIO_AUTH_TOKEN"
-twilio_phone_number = "YOUR_TWILIO_PHONE_NUMBER"
+twilio_account_sid = os.environ.get("TWILIO_ACCOUNT_SID")
+twilio_auth_token = os.environ.get("TWILIO_AUTH_TOKEN")
+twilio_phone_number = os.environ.get("TWILIO_PHONE_NUMBER")
 
 @app.route('/submit', methods=['POST'])
 def submit_form():
@@ -52,13 +53,14 @@ def analyze_weather(weather_data):
 
     # Send the weather data to OpenAI for analysis
     prompt = f"Provide clothing recommendations for weather conditions: Temperature {temperature}°C and {weather_description}."
-    response = openai.Completion.create(
-        engine="text-davinci-002",
-        prompt=prompt,
-        max_tokens=50  # Adjust based on your requirements
+    client = openai.OpenAI()
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=150
     )
 
-    return response.choices[0].text
+    return response.choices[0].message.content
 
 def send_sms_twilio(to_number, message):
     client = Client(twilio_account_sid, twilio_auth_token)
